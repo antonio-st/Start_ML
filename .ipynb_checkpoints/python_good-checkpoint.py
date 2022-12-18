@@ -183,8 +183,6 @@ else:
 # Дополнения к for и while: это команды break и continue. 
 # Оба дают возможность выйти из цикла раньше задуманного.
 
-#break
-
 words = ['see', 'this', 'long', 'sentence', 'here', 'no-show', 'no-show']
 
 for i in range(len(words)):
@@ -192,25 +190,3 @@ for i in range(len(words)):
     if i > 2: # на третьем слове выходим из цикла по break
         break
     # вывод see this long sentence
-    
-    
-# в случае вложенного цикла break выходит только из внетреннего
-
-for i in range(5):
-    for j in range(7):
-        print(i, j)
-        if j > 2:
-            break
-    print('Увеличиваем i')
-    
-# continue
-
-# выводит не из всего цикла, а пропускает одну иттерацию
-
-for future in ['make sandwitch', 'make coffee', 'watch TV', 'wash plate']:
-    if future == 'make coffee':
-        # пропустить 1 иттерацию в цикле
-        print('Coffee mashine is broken, skipping :(')
-        continue
-        # если условие истинно, но continue гарантирует, что дальше цикл выполняться не будет.
-    print(f'starting action: {future}')
