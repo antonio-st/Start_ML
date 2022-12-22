@@ -1,0 +1,4 @@
+pandas
+numpy
+notebook ==6.5.2
+loguru
