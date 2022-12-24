@@ -368,3 +368,37 @@ def mystery_combine(a: str, b: str, times: int) -> str:
     чтения и лучше раскрыть его предназначение.
     '''
     return (a + b) * times
+
+
+# ----------------------------------------------------------------------
+# виртуальные окружения
+
+# фиксация версий пакетов в файле: requirements.txt
+pandas==1.4.0
+pandas<1.4
+numpy
+
+# запуск установки из requirements.txt
+
+
+pip install -r requirements.txt
+# или 
+pip install -U -r requirements.txt #чтобы pip поставил строго те версии pandas, которые вы указали
+
+# создать окружение
+python -m venv имя_окружения
+python3 -m venv venv # linux
+
+.\имя_окружения\Scripts\activate #Windows
+
+# активация окружение командой(Linux и MacOS)
+source имя_окружения/bin/activate
+source venv/bin/activate
+
+
+# Чтобы выйти из виртуального окружение нужно ввести команду
+deactivate
+
+
+# открыть notebook после активации окружения из этого окружения
+python3 -m jupyter notebook

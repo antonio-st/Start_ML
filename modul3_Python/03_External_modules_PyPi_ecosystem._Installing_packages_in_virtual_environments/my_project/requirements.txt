@@ -1,4 +1,4 @@
-pandas
+pandas<1.4 
 numpy
 notebook ==6.5.2
 loguru
