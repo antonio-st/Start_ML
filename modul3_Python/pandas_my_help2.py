@@ -3,6 +3,7 @@
 
 import pandas as pd
 # считали данные из файла в DataFrame
+
 df = pd.read_csv('train.csv') 
 
 # можно сразу указать тип колонки 
@@ -10,7 +11,7 @@ df = pd.read_csv('train.csv', dtype={'season': int})
 
  
  #загрузить файл excel
- Macro = pd.read_excel("macrofeatures.xlsx", engine="openpyxl")
+df = pd.read_excel("macrofeatures.xlsx", engine="openpyxl")
 
 
 #------------------------------------------------------
@@ -19,32 +20,32 @@ df = pd.read_csv('train.csv', dtype={'season': int})
 df.dtypes
  
 #вывести подробное инфо о DF, похоже на dtypes
-lesson5.info()  
+df.info()  
  
  #вывести n первых и последних значений
-taxiDB.head()
+df.head()
 
 
 
 #размерность DF / Проверьте, сколько всего строк и столбцов имеется в датасете.
-data.shape  
+df.shape  
 
 df.describe() #среднее, медиана и прочие параметры по всем колонкам
 
-rows, cols = taxi.shape
+rows, cols = df.shape
 print(f'rows = {rows}, {cols = }')
 
 
  #сортировка по кол-ву значений
-taxiDB['store_and_fwd_flag'].value_counts()
+df['store_and_fwd_flag'].value_counts()
 
 
  # перевод в значение времени
-taxiDB['pickup_datetime'] = pd.to_datetime(taxiDB['pickup_datetime'])
+df['columns'] = pd.to_datetime(df['columns'])
 
 
  #вычитаем разность времени и переводим в секунды
-taxiDB['trip_duration'] = (taxiDB['dropoff_datetime']-taxiDB['pickup_datetime']).dt.seconds
+df['trip_duration'] = (df['dropoff_datetime']-df['pickup_datetime']).dt.seconds
 
 ### Выделим месяц запуска проекта
 data['Срок'] = (data['Дедлайн'] - data['Дата публикации']).dt.days
@@ -56,10 +57,10 @@ data['Дата публикации'] = data['Дата публикации'].as
 
 
  #удаление 1 столбца
-taxiDB = taxiDB.drop(['dropoff_datetime'], axis=1)
+df = df.drop(['dropoff_datetime'], axis=1)
 
 #удалить 4 столбца
-taxiDB = taxiDB.drop(['pickup_longitude', 'dropoff_longitude',
+df = df.drop(['pickup_longitude', 'dropoff_longitude',
                       'pickup_latitude', 'dropoff_latitude'], axis=1)
 
 
@@ -68,10 +69,10 @@ taxiDB = taxiDB.drop(['pickup_longitude', 'dropoff_longitude',
 
 
 #найти все значения "N" и заменить их на 0
-taxiDB.loc[taxiDB['store_and_fwd_flag'] == 'N','store_and_fwd_flag'] = 0
+df.loc[df['store_and_fwd_flag'] == 'N','store_and_fwd_flag'] = 0
 
 #найти все значения "N" и заменить их на 0 и сохранить в столбце 'таргет1'
-taxiDB.loc[(taxiDB['store_and_fwd_flag'] == 'N'), 'таргет1'] = 0
+df.loc[(df['store_and_fwd_flag'] == 'N'), 'таргет1'] = 0
 
 #------------------------------------------------------
 # фильтрации
@@ -90,14 +91,14 @@ taxiDB['таргет1'] = taxiDB['таргет1'].fillna(1)
 #------------------------------------------------------
 
 #------------------ запросы, аналог фильтров или SQL
-taxi.query('borough == \'Queens\' or  borough == \'Manhattan\'')
-taxi.query('pickups < 1000 and borough == \'Manhattan\'')
+df.query('borough == \'Queens\' or  borough == \'Manhattan\'')
+df.query('pickups < 1000 and borough == \'Manhattan\'')
 
 #сколько раз в данных встречается район Бруклин (Brooklyn)
-taxi.query("borough == 'Brooklyn'").shape[0]
+df.query("borough == 'Brooklyn'").shape[0]
 
 #аналог like в SQL
-taxi.query('pickups < 1000 and pickup_month.str.contains(\'Ja\')')
+df.query('pickups < 1000 and pickup_month.str.contains(\'Ja\')')
 
 #------------------ 
 
@@ -157,16 +158,16 @@ result = data[( (data['name'] == 'Taco Bell') | (data['city'] == 'New York') ) \
 
 
 #вывести из столбца df только те элементы которые  = 1
-taxiDB[taxiDB['store_and_fwd_flag'].isin([1])]
+df[df['store_and_fwd_flag'].isin([1])]
 
 #перезаписать колонку в df, оставить только значения  = Y и N
-taxiDB = [taxiDB['store_and_fwd_flag'].isin(['Y', 'N'])]
+df = [df['store_and_fwd_flag'].isin(['Y', 'N'])]
 
 #переименовать колонку
-taxiDB = taxiDB.rename({'store_and_fwd_flag': 'таргет'}, axis=1)
+df = df.rename({'store_and_fwd_flag': 'таргет'}, axis=1)
 
 #удалить дубли в колонках
-Macro = Macro[['Close_brent', 'dlk_cob_date']].drop_duplicates()
+df = df[['Close_brent', 'dlk_cob_date']].drop_duplicates()
 
 #  удалить дубли в колонке, subset + сброс индексов
 
@@ -202,11 +203,11 @@ user_data.merge(users_lovely_brand_data, how='inner', on='tc')
 
 # ------- concat объеденить несколько df или можно несколько строк с текущего df вырезанных слайсами
 
-s1 = playstore[:3].copy()
-s2 = playstore[5:8].copy()
-s3 = playstore[15:19].copy()
+s1 = df[:3].copy()
+s2 = df[5:8].copy()
+s3 = df[15:19].copy()
 
-playstore_concat = pd.concat([s1, s2, s3])[['App', 'Size', 'Genres', 'Current Ver']] # так же выбираем определенные столбцы
+df_concat = pd.concat([s1, s2, s3])[['App', 'Size', 'Genres', 'Current Ver']] # так же выбираем определенные столбцы
 
 
 
@@ -354,15 +355,31 @@ user_data.orders.plot('hust', bins=15)
 #------------------ график с разбиением на категории
 ax = sns.distplot(loyalty_df.loyalty_score, kde=False)
 
+# встроенный график pandas
+df.plot(
+    xlabel='Номер недели',
+    ylabel = 'Средняя $t^o$',
+    title='Средняя температура еженедельно',
+    grid=True,
+    figsize=(9,5)
+)
 
+# гистограмма /встроенный график pandas
+df['temp'].hist(figsize=(9,5), bins=100)
 
 
 # ------------------ СОХРАНЕНИЕ В ФАЙЛ ------------------
 
+#CSV
 #вывести 10 первых значений и сохранить в csv , разделитель ";", не сохранять индексы
 lesson5 = taxiDB[:9]
 lesson5.to_csv('taxiDB_l5.csv', sep=';', index=False)  
 
+
+#Excel
+!pip install openpyxl
+#запись в файл
+df.to_excel('rents_by_week.xlsx', engine='openpyxl')
 
 # ------------------ ------------------
 
