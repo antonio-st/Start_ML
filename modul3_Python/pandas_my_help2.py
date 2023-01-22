@@ -1,22 +1,36 @@
+
+#----------------------ИМПОРТ И ЗАГРУЗКА ДАННЫХ--------------------------------
+
+import pandas as pd
+# считали данные из файла в DataFrame
+df = pd.read_csv('train.csv') 
+
+# можно сразу указать тип колонки 
+df = pd.read_csv('train.csv', dtype={'season': int}) 
+
  
  #загрузить файл excel
  Macro = pd.read_excel("macrofeatures.xlsx", engine="openpyxl")
 
+
+#------------------------------------------------------
+
  # вывести типы колонок
 df.dtypes
+ 
+#вывести подробное инфо о DF, похоже на dtypes
+lesson5.info()  
  
  #вывести n первых и последних значений
 taxiDB.head()
 
-#вывести подробное инфо о DF
-lesson5.info() 
-#размерность DF
+
+
+#размерность DF / Проверьте, сколько всего строк и столбцов имеется в датасете.
 data.shape  
 
 df.describe() #среднее, медиана и прочие параметры по всем колонкам
 
-#Проверьте, сколько всего строк и столбцов имеется в датасете.
-taxi.shape
 rows, cols = taxi.shape
 print(f'rows = {rows}, {cols = }')
 
@@ -49,6 +63,9 @@ taxiDB = taxiDB.drop(['pickup_longitude', 'dropoff_longitude',
                       'pickup_latitude', 'dropoff_latitude'], axis=1)
 
 
+#----------------------ФИЛЬТРАЦИЯ --------------------------------
+
+
 
 #найти все значения "N" и заменить их на 0
 taxiDB.loc[taxiDB['store_and_fwd_flag'] == 'N','store_and_fwd_flag'] = 0
@@ -56,14 +73,88 @@ taxiDB.loc[taxiDB['store_and_fwd_flag'] == 'N','store_and_fwd_flag'] = 0
 #найти все значения "N" и заменить их на 0 и сохранить в столбце 'таргет1'
 taxiDB.loc[(taxiDB['store_and_fwd_flag'] == 'N'), 'таргет1'] = 0
 
+#------------------------------------------------------
+# фильтрации
+# по значению
+df[(df['workingday'] == 1) & (df['season'] == 1)]
+
+# аналог фильтрации через query
+df.query('workingday == 1 and season == 1')
+
+# аналог фильтрации через loc
+df.loc[(df.workingday == 1) & (df.season == 1)]
+
 #найти все значения Nan и заполнить их 1
 taxiDB['таргет1'] = taxiDB['таргет1'].fillna(1)
 
+#------------------------------------------------------
+
+#------------------ запросы, аналог фильтров или SQL
+taxi.query('borough == \'Queens\' or  borough == \'Manhattan\'')
+taxi.query('pickups < 1000 and borough == \'Manhattan\'')
+
+#сколько раз в данных встречается район Бруклин (Brooklyn)
+taxi.query("borough == 'Brooklyn'").shape[0]
+
+#аналог like в SQL
+taxi.query('pickups < 1000 and pickup_month.str.contains(\'Ja\')')
+
+#------------------ 
+
+'''
+Индекс и имена колонок
+Индекс – это лэйбл строки в таблице, по умолчанию является её номером. А имена колонок... это имена колонок, то есть лэйблы, по которым мы можем обращаться к каждому из столбцов.
+У датафрэйма есть два атрибута – index и columns.  Они позволяют получить доступ к соответствующей информации в виде array (на самом деле не совсем array).
+df.index
+df.columns
+'''
+
+# прямое обращение по индексу через .loc
+df.loc[4]
+# обратиться к 'temp' индексу элементу предыдущего вывода
+df.loc[4]['temp'] 
+
+# слайс для df по index
+df[4:5] 
+
+#------------------------------------------------------
+
+# -------------- apply и lambda --------------------
+# отобрать записи, у которых более 20 категорий
+data[data.categories.str.split(',').apply(lambda x: len(x) > 20)]
 
 
-#вывести 10 первых значений и сохранить в csv , разделитель ";"
-lesson5 = taxiDB[:9]
-lesson5.to_csv('taxiDB_l5.csv', sep=';')
+
+#------------------ Поиск пустых значений ----------------
+# isna – это чудо-метод, с помощью которого можно быстро найти пропущенные значения в датафрэйме.
+df.isna()
+df.isna().sum() # сумма пустых значений
+isna().any().any() # поиск пустых значений по всему df
+
+
+#------------------
+# количество уникальных значений
+df.App.nunique()
+
+# количество не null
+df.Rating.notna().sum()
+
+# убрать дубликаты / сбросить индекс
+df.drop_duplicates(subset=['App']).reset_index(drop=True)
+
+
+# убрать дубликаты / вывести долю
+df.drop_duplicates(subset=['app']).type.value_counts(normalize=True)
+
+
+
+# найдем заведения Taco Bell или заведения, которые находятся в городе Нью-Йорк.
+# При этом обязательно, чтобы в названии меню не было Volcano Taco и Fresco Soft Taco
+result = data[( (data['name'] == 'Taco Bell') | (data['city'] == 'New York') ) \
+     & ( ~ data['menus.name'].isin(['Volcano Taco', 'Fresco Soft Taco'])  )]
+
+
+
 
 #вывести из столбца df только те элементы которые  = 1
 taxiDB[taxiDB['store_and_fwd_flag'].isin([1])]
@@ -77,8 +168,19 @@ taxiDB = taxiDB.rename({'store_and_fwd_flag': 'таргет'}, axis=1)
 #удалить дубли в колонках
 Macro = Macro[['Close_brent', 'dlk_cob_date']].drop_duplicates()
 
+#  удалить дубли в колонке, subset + сброс индексов
+
+unique_playstore = playstore.drop_duplicates(subset=['App']).reset_index(drop=True)
+
+
 #сортировка по столбцу
 data = data.sort_values('Дата публикации')
+
+
+
+
+
+
 
 #----------------Объединение датафрэймов, JOIN
 
@@ -96,6 +198,17 @@ loyalty_df = users_purchases \
 
 # -------Здесь мы объединяем датафрэйм users_data с датафрэймом users_lovely_brand_data по колонке tc с помощью inner джойна:
 user_data.merge(users_lovely_brand_data, how='inner', on='tc')
+
+
+# ------- concat объеденить несколько df или можно несколько строк с текущего df вырезанных слайсами
+
+s1 = playstore[:3].copy()
+s2 = playstore[5:8].copy()
+s3 = playstore[15:19].copy()
+
+playstore_concat = pd.concat([s1, s2, s3])[['App', 'Size', 'Genres', 'Current Ver']] # так же выбираем определенные столбцы
+
+
 
 #----------------------------
 
@@ -117,6 +230,14 @@ users_purchases = user_df.groupby('user_id', as_index=False) \
     .query('purchases >= 5')
 
 
+#------------------ найти уникальные бренды pd.Series.nunique
+#--------- nunique – метод, который считает число уникальных значений в колонке.
+
+users_unique_brands = user_df.groupby('user_id', as_index=False) \
+    .agg({'brand_name': pd.Series.nunique}) \
+    .rename(columns={'brand_name': 'unique_brands'})
+
+
 #------------------поиск уникальных брендов на пользователя
 
 users_unique_brands = user_df.groupby('user_id', as_index=False) \
@@ -132,17 +253,6 @@ lovely_brand_purchases_df = user_df.groupby(['user_id', 'brand_name'], as_index=
     .rename(columns={'brand_name': 'lovely_brand','brand_info': 'lovely_brand_purchases'})
 
 
-#------------------ запросы, аналог фильтров или SQL
-taxi.query('borough == \'Queens\' or  borough == \'Manhattan\'')
-taxi.query('pickups < 1000 and borough == \'Manhattan\'')
-
-#сколько раз в данных встречается район Бруклин (Brooklyn)
-taxi.query("borough == 'Brooklyn'").shape[0]
-
-#аналог like в SQL
-taxi.query('pickups < 1000 and pickup_month.str.contains(\'Ja\')')
-
-#------------------ 
 
 #idxmin – индекс минимального значения
 min_pickups = taxi.groupby('borough').pickups.sum().idxmin()
@@ -158,6 +268,7 @@ taxi.groupby(['borough', 'hday'])\
             .to_frame() 
 
 #------------------сохранить файл с датой в имени
+from datetime import datetime
     today_day = datetime.today().strftime('%Y-%m-%d')
     file_name = 'money_title_{}.csv'
     file_name = file_name.format(today_day)    
@@ -244,28 +355,27 @@ user_data.orders.plot('hust', bins=15)
 ax = sns.distplot(loyalty_df.loyalty_score, kde=False)
 
 
-#------------------ найти уникальные бренды pd.Series.nunique
-#--------- nunique – метод, который считает число уникальных значений в колонке.
-
-users_unique_brands = user_df.groupby('user_id', as_index=False) \
-    .agg({'brand_name': pd.Series.nunique}) \
-    .rename(columns={'brand_name': 'unique_brands'})
 
 
-'''
-Индекс и имена колонок
+# ------------------ СОХРАНЕНИЕ В ФАЙЛ ------------------
 
-Индекс – это лэйбл строки в таблице, по умолчанию является её номером. А имена колонок... это имена колонок, то есть лэйблы, по которым мы можем обращаться к каждому из столбцов.
+#вывести 10 первых значений и сохранить в csv , разделитель ";", не сохранять индексы
+lesson5 = taxiDB[:9]
+lesson5.to_csv('taxiDB_l5.csv', sep=';', index=False)  
 
-У датафрэйма есть два атрибута – index и columns.  Они позволяют получить доступ к соответствующей информации в виде array (на самом деле не совсем array).
 
-df.index
-df.columns
+# ------------------ ------------------
 
-'''
 
-#------------------ Поиск пустых значений
-#---- isna – это чудо-метод, с помощью которого можно быстро найти пропущенные значения в датафрэйме.
-df.isna()
-df.isna().sum() # сумма пустых значений
+# ------------------Сводная таблица pandas ------------------
+
+# пример pd.pivot
+pivot_ps = pd.pivot_table(df, index=['category', 'type'], values=['price', 'rating', 'reviews']
+# переименовать колонку                        
+pivot_ps.rename(columns={'price': 'mean_price', 
+                         'rating': 'mean_rating',
+                         'reviews': 'mean_reviews'})
+# округлить значения в колонке
+pivot_ps['mean_price'] = pivot_ps['mean_price'].round(2)
+# ------------------ ------------------
 
