@@ -1,0 +1,11 @@
+exp_group,os,total_users,max_age,min_age
+0,Android,21234,95,14
+0,iOS,11489,79,14
+1,Android,21232,92,14
+1,iOS,11406,87,14
+2,Android,21102,78,14
+2,iOS,11512,74,14
+3,Android,21319,84,14
+3,iOS,11449,85,14
+4,Android,21085,84,14
+4,iOS,11377,78,14
