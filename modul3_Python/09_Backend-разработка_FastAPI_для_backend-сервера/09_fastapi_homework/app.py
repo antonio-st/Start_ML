@@ -24,7 +24,7 @@ class User(BaseModel):
     class Config:
         orm_mode = True
 
-# валидация для @app.get("/post/{post_id}"
+# валидация для @app.get("/post/{id}"
 class PostResponse(BaseModel):
     id: int
     text: str
@@ -68,7 +68,6 @@ def find_user(id: int, db=Depends(get_db)) -> PostResponse:
         WHERE id = {id}
         """)
     results = cursor.fetchone()
-
     if not results:
         raise HTTPException(404, f"post {id} not found")
     return PostResponse(**results)
