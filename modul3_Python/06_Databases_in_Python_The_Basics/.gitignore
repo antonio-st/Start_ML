@@ -1,3 +1,7 @@
 prev
 material
 .gitignore
+.ipynb_checkpoints
+ipynb_checkpoints
+/.ipynb_checkpoints
+~/.ipynb_checkpoints
