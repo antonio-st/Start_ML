@@ -402,3 +402,6 @@ deactivate
 
 # открыть notebook после активации окружения из этого окружения
 python3 -m jupyter notebook
+
+# узнать где находится виртуальное окружение
+which python
