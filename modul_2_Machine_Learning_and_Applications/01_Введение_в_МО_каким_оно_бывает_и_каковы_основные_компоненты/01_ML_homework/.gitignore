@@ -1,0 +1,6 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+.taxi_dataset.csv
+taxi_dataset.csv
+**/*.ipynb_checkpoints/
+.ipynb_checkpoints/
+.ipynb_checkpoints

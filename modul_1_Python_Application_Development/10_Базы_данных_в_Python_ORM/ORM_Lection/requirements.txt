@@ -1,0 +1,2 @@
+sqlalchemy<1.4.46
+psycopg2-binary==2.9.5
