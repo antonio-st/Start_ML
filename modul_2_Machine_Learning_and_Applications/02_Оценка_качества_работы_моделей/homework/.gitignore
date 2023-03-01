@@ -1,5 +1,4 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
-.taxi_dataset_with_predictions.csv
 taxi_dataset_with_predictions.csv
 **/*.ipynb_checkpoints/
 .ipynb_checkpoints/
