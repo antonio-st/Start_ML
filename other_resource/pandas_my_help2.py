@@ -14,6 +14,9 @@ df = pd.read_csv('train.csv', dtype={'season': int})
 df = pd.read_excel("macrofeatures.xlsx", engine="openpyxl")
 
 
+# установить число колонок
+pd.options.display.max_columns = 500
+
 #------------------------------------------------------
 
  # вывести типы колонок
@@ -85,7 +88,7 @@ df.query('workingday == 1 and season == 1')
 # аналог фильтрации через loc
 df.loc[(df.workingday == 1) & (df.season == 1)]
 
-#найти все значения Nan и заполнить их 1
+#найти все значения Nan в столбце таргет1 и заполнить их 1
 taxiDB['таргет1'] = taxiDB['таргет1'].fillna(1)
 
 #------------------------------------------------------
@@ -396,3 +399,18 @@ pivot_ps.rename(columns={'price': 'mean_price',
 pivot_ps['mean_price'] = pivot_ps['mean_price'].round(2)
 # ------------------ ------------------
 
+
+# ------------------Работа с таргетом ------------------
+
+# прологарифмировали таргетную переменную и вставили в новый столбец
+
+df = df.assign(log_price_doc = np.log1p(df['price_doc']))
+
+# ------------------Работа с пропусками ------------------
+
+### Посмотрим на некатегориальные колонки (записали в переменную)
+numeric_columns = df.loc[:,df.dtypes!=np.object_].columns
+
+# заполняем пропуски средним значением (прошли в цикле по каждой колонке , вычислили среднее, и записали в качестве Nan)
+for col in numeric_columns:
+    df[col] = df[col].fillna(df[col].mean())
