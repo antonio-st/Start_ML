@@ -1,3 +1,8 @@
+#----------------------архивация--------------------------------
+
+!tar -zcvf train.tar.gz train.csv
+
+tar -xvf archive.tar.gz или tar -zxvf archive.tar.gz
 
 #----------------------ИМПОРТ И ЗАГРУЗКА ДАННЫХ--------------------------------
 
@@ -34,6 +39,8 @@ df.head()
 df.shape  
 
 df.describe() #среднее, медиана и прочие параметры по всем колонкам
+### Посмотрим на категориальные колонки
+df.describe(include='object')
 
 rows, cols = df.shape
 print(f'rows = {rows}, {cols = }')
@@ -123,6 +130,12 @@ df[4:5]
 
 #------------------------------------------------------
 
+
+# ---- сделать индекс колонкой
+taxiDB.set_index('id')
+
+
+
 # -------------- apply и lambda --------------------
 # отобрать записи, у которых более 20 категорий
 data[data.categories.str.split(',').apply(lambda x: len(x) > 20)]
@@ -211,6 +224,9 @@ s2 = df[5:8].copy()
 s3 = df[15:19].copy()
 
 df_concat = pd.concat([s1, s2, s3])[['App', 'Size', 'Genres', 'Current Ver']] # так же выбираем определенные столбцы
+
+# или
+
 
 
 
@@ -414,3 +430,22 @@ numeric_columns = df.loc[:,df.dtypes!=np.object_].columns
 # заполняем пропуски средним значением (прошли в цикле по каждой колонке , вычислили среднее, и записали в качестве Nan)
 for col in numeric_columns:
     df[col] = df[col].fillna(df[col].mean())
+
+
+
+# ### Закодируем колонку с годом через One-Hot
+
+one_hot = pd.get_dummies(df['month'], prefix='month', drop_first=True)
+df = pd.concat((df.drop('month', axis=1), one_hot), axis=1)
+
+
+
+
+
+# ------------------ Квантиль (quantile) - 
+# число, которое заданная случайная величина не превышает с фиксированной вероятностью. 
+# Например, 0,025-квантиль – число, ниже которого лежит примерно 2,5% выборки
+
+
+top_quantile = data['log_price_doc'].quantile(0.975)
+low_quantile = data['log_price_doc'].quantile(0.025)
