@@ -4,3 +4,7 @@ taxi_dataset.csv
 **/*.ipynb_checkpoints/
 .ipynb_checkpoints/
 .ipynb_checkpoints
+.bz2
+**/*.bz2
+.7z
+**/*.7z

@@ -5,3 +5,5 @@ Y.csv
 .X.csv
 .Y.csv
 .ipynb_checkpoints
+.bz2
+**/*.bz2

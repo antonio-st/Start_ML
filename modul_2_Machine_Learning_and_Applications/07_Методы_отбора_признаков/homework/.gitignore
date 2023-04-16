@@ -7,3 +7,5 @@ taxi_dataset.csv
 .processed_data_1.csv
 .processed_data.csv
 .taxi_dataset.csv
+.bz2
+**/*.bz2

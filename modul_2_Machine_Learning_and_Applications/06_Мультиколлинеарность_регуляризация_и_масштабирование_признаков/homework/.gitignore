@@ -5,3 +5,5 @@ processed_data.csv
 .processed_data.csv
 new_data.csv
 .new_data.csv
+.bz2
+**/*.bz2

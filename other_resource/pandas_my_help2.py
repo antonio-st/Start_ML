@@ -77,6 +77,11 @@ df = df.drop(['pickup_longitude', 'dropoff_longitude',
                       'pickup_latitude', 'dropoff_latitude'], axis=1)
 
 
+### удалить столбцы в которых число пропусков превысит 15%
+
+df = df.dropna(thresh=int(len(df) * .85), axis=1)
+
+
 #----------------------ФИЛЬТРАЦИЯ --------------------------------
 
 
@@ -427,8 +432,14 @@ df = df.assign(log_price_doc = np.log1p(df['price_doc']))
 
 # ------------------Работа с пропусками ------------------
 
-### Посмотрим на некатегориальные колонки (записали в переменную)
+### Посмотрим на некатегориальные колонки и категориальные (записали в переменную)
 numeric_columns = df.loc[:,df.dtypes!=np.object_].columns
+categorical_columns = df.loc[:,df.dtypes==np.object_].columns
+
+# аналог (передавая необходимый тип данных как аргумент в include, exclude исключить тип)
+df.select_dtypes(include=object).columns
+df.dtypes[df.select_dtypes(exclude=object).columns]
+
 
 # заполняем пропуски средним значением (прошли в цикле по каждой колонке , вычислили среднее, и записали в качестве Nan)
 for col in numeric_columns:
@@ -441,8 +452,17 @@ for col in numeric_columns:
 one_hot = pd.get_dummies(df['month'], prefix='month', drop_first=True)
 df = pd.concat((df.drop('month', axis=1), one_hot), axis=1)
 
+### ohe, в случае если категорий меньше 5
 
+for col in categorical_columns:
+    if col != 'timestamp': 
+        if df[col].nunique() < 5:
+            one_hot = pd.get_dummies(df[col], prefix=col, drop_first=True)
+            df = pd.concat((df.drop(col, axis=1), one_hot), axis=1)
 
+        else:
+            mean_target = df.groupby(col)['log_price_doc'].mean()
+            df[col] = df[col].map(mean_target)
 
 
 # ------------------ Квантиль (quantile) - 
