@@ -32,6 +32,9 @@ df.dtypes
  
 #вывести подробное инфо о DF, похоже на dtypes
 df.info()  
+
+#выведет подробно количество выделяемой памяти
+df.info(memory_usage='deep')
  
  #вывести n первых и последних значений
 df.head()
@@ -42,6 +45,11 @@ df.head()
 df.shape  
 
 df.describe() #среднее, медиана и прочие параметры по всем колонкам
+
+
+###можно так
+df.describe(include='all') 
+
 ### Посмотрим на категориальные колонки
 df.describe(include='object')
 
@@ -51,6 +59,15 @@ print(f'rows = {rows}, {cols = }')
 
  #сортировка по кол-ву значений
 df['store_and_fwd_flag'].value_counts()
+
+#возвратить пропорции
+df['Species'].value_counts(normalize=True)
+
+### пропорции с сортировкой по частотам
+df['Species'].value_counts(normalize=True, ascending=True, sort=False)
+
+### отобразить пропущенные значения
+df['Species'].value_counts(dropna=False)
 
 
  # перевод в значение времени
@@ -156,6 +173,9 @@ df.isna()
 df.isna().sum() # сумма пустых значений
 isna().any().any() # поиск пустых значений по всему df
 
+#------------------
+# unique() - возвращает уникальные значения объекта Series в виде массива.
+df['Species'].unique()
 
 #------------------
 # количество уникальных значений
@@ -472,3 +492,12 @@ for col in categorical_columns:
 
 top_quantile = data['log_price_doc'].quantile(0.975)
 low_quantile = data['log_price_doc'].quantile(0.025)
+
+
+
+# ------------------ создадим словарик из ключ - столбец, значение  - feature_importances важность фичей
+res = {}
+for i in range(len(list(X_test_.columns))):
+    res[X_test_.columns[i]] = round(c[i],3)
+# отсортируем словарик по значению x[1], возьмем первые 3 элемента, сделаем reverse
+sorted(res.items(), key=lambda x:x[1], reverse=True)[:3]

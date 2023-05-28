@@ -1,0 +1,26 @@
+import torch
+
+def function03(x: torch.Tensor, y: torch.Tensor):
+
+    x_size = x.shape[1]
+    w = torch.rand(x_size, dtype=torch.float32, requires_grad=True)
+
+    # ошибка > 1
+    mse = torch.tensor([50])
+
+    while mse.item() > 1: # цикл пока ошибка > 1
+        y_predict = x @ w # предсказания при текущих весах
+
+        # посчитаем ошибку
+        mse = torch.mean((y_predict - y) ** 2)
+        
+        # считаем градиенты
+        mse.backward()
+        
+        # выключим подсчет градиента
+        with torch.no_grad():
+            # обновим наши параметры
+            w = w - w.grad * 1e-3
+        w.requires_grad = True
+    
+    return w
